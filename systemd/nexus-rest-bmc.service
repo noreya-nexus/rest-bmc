@@ -1,0 +1,15 @@
+[Unit]
+Description=BMC REST API
+Wants=multi-user.target nexus-drv-bmc.service
+
+[Service]
+Environment=RUST_APP_LOG="info"
+Environment=ROCKET_ENV=production
+Environment=PORT=8003
+ExecStart=/usr/bin/nexus-rest-bmc
+MemoryMax=10M
+User=sdbp
+Group=sdbp
+
+[Install]
+WantedBy=multi-user.target
