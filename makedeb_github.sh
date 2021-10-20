@@ -22,7 +22,9 @@ mkdir -p "$PACKAGE_NAME/usr/bin/"
 mkdir -p "$PACKAGE_NAME/etc/nginx/sites-available/nexus"
 
 cp ../systemd/nexus-rest-bmc.service "$PACKAGE_NAME/lib/systemd/system/"
-cp ../target/armv7-unknown-linux-gnueabihf/release/nexus-rest-bmc  "$PACKAGE_NAME/usr/bin/"
+cp ../target/release/nexus-rest-bmc  "$PACKAGE_NAME/usr/bin/" || true  # Support native builds
+cp ../target/armv7-unknown-linux-gnueabihf/release/nexus-rest-bmc  "$PACKAGE_NAME/usr/bin/" || true  # Support cross builds
+find "$PACKAGE_NAME/usr/bin/nexus-rest-bmc"  # Check if a binary exists
 cp ../nginx/nexus-rest-bmc.conf  "$PACKAGE_NAME/etc/nginx/sites-available/nexus"
 
 cd "$PACKAGE_NAME"
