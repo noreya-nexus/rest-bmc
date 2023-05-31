@@ -1,6 +1,7 @@
-use nexus_unity_sdbp::datatypes::{VersionError};
+use noreya_sdbp::datatypes::{VersionError};
 use rocket::request::FromParam;
 
+#[derive(Debug, Clone)] // Needed
 pub struct ApiVersion {
     major: u16,
     minor: u16,

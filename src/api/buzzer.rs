@@ -1,4 +1,4 @@
-use nexus_unity_sdbp::sdbp::response::custom::bmc::buzzer::*;
+use noreya_sdbp::sdbp::response::custom::bmc::buzzer::*;
 use rocket::{State};
 
 use crate::api::helper::Helper;
@@ -8,7 +8,7 @@ use crate::response;
 use crate::settings::Settings;
 use rocket::serde::json::Json;
 use crate::response::CResponse;
-use nexus_unity_sdbp::sdbp::request::custom::bmc::CustomBuilderBmc;
+use noreya_sdbp::sdbp::request::custom::bmc::CustomBuilderBmc;
 
 #[post("/bmc/<version>/<slot>/buzzer", data = "<param>")]
 pub fn buzzer(settings: &State<Settings>, version: ApiVersion, slot: u16, param: Json<json::buzzer::Param>) -> CResponse {

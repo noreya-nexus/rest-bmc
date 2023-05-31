@@ -5,7 +5,7 @@ use rocket::http::Status;
 #[serde(deny_unknown_fields)]
 pub struct Param {
     pub enabled: bool,
-    pub timeout: u32,
+    pub timeout: u32, // IMPROVEMENT: Add unit suffix
 }
 
 #[derive(Default, Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]

@@ -19,19 +19,23 @@ cd builddeb/
 
 mkdir -p "$PACKAGE_NAME/lib/systemd/system/"
 mkdir -p "$PACKAGE_NAME/usr/bin/"
-mkdir -p "$PACKAGE_NAME/etc/nginx/sites-available/nexus"
+mkdir -p "$PACKAGE_NAME/etc/nginx/sites-available/nexus/upstream"
+mkdir -p "$PACKAGE_NAME/etc/nginx/sites-enabled-subdir/nexus/upstream"
 
-cp ../systemd/nexus-rest-bmc.service "$PACKAGE_NAME/lib/systemd/system/"
-cp ../target/release/nexus-rest-bmc  "$PACKAGE_NAME/usr/bin/" || true  # Support native builds
-cp ../target/armv7-unknown-linux-gnueabihf/release/nexus-rest-bmc  "$PACKAGE_NAME/usr/bin/" || true  # Support cross builds
-find "$PACKAGE_NAME/usr/bin/nexus-rest-bmc"  # Check if a binary exists
-cp ../nginx/nexus-rest-bmc.conf  "$PACKAGE_NAME/etc/nginx/sites-available/nexus"
+cp ../systemd/$PACKAGE.service "$PACKAGE_NAME/lib/systemd/system/"
+if [ -f "../target/release/$PACKAGE" ]; then
+  cp ../target/release/$PACKAGE "$PACKAGE_NAME/usr/bin/"
+else
+  cp ../target/"$(arch)"-unknown-linux-gnu/release/$PACKAGE "$PACKAGE_NAME/usr/bin/"
+fi
+cp ../nginx/$PACKAGE.conf "$PACKAGE_NAME/etc/nginx/sites-available/nexus"
+cp ../nginx/$PACKAGE-upstream.conf "$PACKAGE_NAME/etc/nginx/sites-available/nexus/upstream"
 
 cd "$PACKAGE_NAME"
 
 # Create manifest
 mkdir debian
-dch --create -v "$VERSION"-"$DEB_VERSION" --package "$PACKAGE" --distribution stable "Please visit https://github.com/nexus-unity/rest-bmc for details!"
+dch --create -v "$VERSION"-"$DEB_VERSION" --package "$PACKAGE" --distribution stable "Please visit https://github.com/noreya-nexus/rest-bmc for details!"
 echo "10" > ./debian/compat
 
 echo "Source: $PACKAGE" > ./debian/control
@@ -43,7 +47,7 @@ echo "Build-Depends: debhelper (>= 10)" >> ./debian/control
 echo "" >> ./debian/control
 echo "Package: $PACKAGE" >> ./debian/control
 echo "Architecture: any" >> ./debian/control
-echo "Depends: \${misc:Depends}, \${shlibs:Depends}, bash (>= 2.1.0), systemd, nginx, nexus-nginx-config, nexus-drv-bmc" >> ./debian/control
+echo "Depends: \${misc:Depends}, \${shlibs:Depends}, bash (>= 2.1.0), systemd, nginx, nexus-nginx-config, nexus-rest-access-control, nexus-drv-bmc" >> ./debian/control
 echo "Description: BMC REST API" >> ./debian/control
 echo "	Webserver providing a REST API" >> ./debian/control
 
@@ -68,16 +72,32 @@ echo "lib/* lib/" >> ./debian/install
 echo "usr/* usr/" >> ./debian/install
 echo "etc/* etc/" >> ./debian/install
 
+# Pre install script
+echo "#!/bin/bash -e" >> ./debian/preinst
+echo "#DEBHELPER#" >> ./debian/preinst
 
 # Post install script
 echo "#!/bin/bash -e" >> ./debian/postinst
 echo "#DEBHELPER#" >> ./debian/postinst
+echo "mkdir -p /etc/nginx/sites-enabled-subdir/"  # This is needed to bypass the default inlcude in nginx.conf
+echo "ln -s /etc/nginx/sites-available/nexus/$PACKAGE.conf /etc/nginx/sites-enabled-subdir/nexus/$PACKAGE.conf" >> ./debian/postinst
+echo "ln -s /etc/nginx/sites-available/nexus/upstream/$PACKAGE-upstream.conf /etc/nginx/sites-enabled-subdir/nexus/upstream/$PACKAGE-upstream.conf" >> ./debian/postinst
+echo "if [ -d /run/systemd/system ]; then" >> ./debian/postinst
 echo "deb-systemd-invoke reload nginx" >> ./debian/postinst
+echo "fi" >> ./debian/postinst
 
 # Pre removal script
 echo "#!/bin/bash -e" >> ./debian/prerm
 echo "#DEBHELPER#" >> ./debian/prerm
+echo "rm -f /etc/nginx/sites-enabled-subdir/nexus/$PACKAGE.conf" >> ./debian/prerm
+echo "rm -f /etc/nginx/sites-enabled-subdir/nexus/upstream/$PACKAGE-upstream.conf" >> ./debian/prerm
+echo "if [ -d /run/systemd/system ]; then" >> ./debian/prerm
 echo "deb-systemd-invoke reload nginx" >> ./debian/prerm
+echo "fi" >> ./debian/prerm
+
+# Post removal script
+echo "#!/bin/bash -e" >> ./debian/postrm
+echo "#DEBHELPER#" >> ./debian/postrm
 
 #cd "$PACKAGE_NAME"
 debuild -b -uc -us --no-sign

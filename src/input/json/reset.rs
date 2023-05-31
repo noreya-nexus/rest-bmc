@@ -1,15 +1,20 @@
+#![allow(dead_code)]
 use crate::json::Validate;
 use rocket::http::Status;
 
 #[derive(Default, Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 #[serde(deny_unknown_fields)]
-pub struct Param {
-    pub mode: u8,
-    pub duration: u32, // IMPROVEMENT: Add unit suffix
+pub struct ResetJson {
+    pub reset : String,
 }
 
-impl Validate for Param {
+impl Validate for ResetJson {
     fn validate(&self) -> Result<(), Status> {
-        Ok(())
+
+        if self.reset != "yes" {
+            return Err(Status::BadRequest)
+        }
+
+        return Ok(());
     }
 }

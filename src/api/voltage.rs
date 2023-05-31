@@ -1,6 +1,6 @@
-use nexus_unity_sdbp::sdbp::request::custom::bmc::protocol::classes as vclass;
-use nexus_unity_sdbp::sdbp::response::custom::bmc::voltage::*;
-use nexus_unity_sdbp::sdbp::request::custom::bmc::CustomBuilderBmc;
+use noreya_sdbp::sdbp::request::custom::bmc::protocol::classes as vclass;
+use noreya_sdbp::sdbp::response::custom::bmc::voltage::*;
+use noreya_sdbp::sdbp::request::custom::bmc::CustomBuilderBmc;
 use rocket::{State};
 
 use crate::api::helper::Helper;

@@ -5,6 +5,7 @@ pub mod watchdog;
 pub mod shutdown;
 pub mod cmc;
 pub mod usbhub;
+pub mod reset;
 
 
 use rocket::http::Status;

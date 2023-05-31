@@ -6,9 +6,9 @@ use crate::input::*;
 use crate::response;
 use crate::settings::Settings;
 use rocket::serde::json::Json;
-use nexus_unity_sdbp::sdbp::response::custom::bmc::cmc::*;
+use noreya_sdbp::sdbp::response::custom::bmc::cmc::*;
 use crate::response::CResponse;
-use nexus_unity_sdbp::sdbp::request::custom::bmc::CustomBuilderBmc;
+use noreya_sdbp::sdbp::request::custom::bmc::CustomBuilderBmc;
 
 #[post("/bmc/<version>/<slot>/usb_bootloader", data = "<param>")]
 pub fn usb_bootloader(settings: &State<Settings>, version: ApiVersion, slot: u16, param: Json<json::cmc::Param>) -> CResponse {

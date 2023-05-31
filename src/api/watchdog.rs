@@ -1,4 +1,4 @@
-use nexus_unity_sdbp::sdbp::response::custom::bmc::watchdog::*;
+use noreya_sdbp::sdbp::response::custom::bmc::watchdog::*;
 use rocket::{State};
 use rocket::serde::json::Json;
 
@@ -8,7 +8,7 @@ use crate::input::*;
 use crate::response;
 use crate::settings::Settings;
 use crate::response::CResponse;
-use nexus_unity_sdbp::sdbp::request::custom::bmc::CustomBuilderBmc;
+use noreya_sdbp::sdbp::request::custom::bmc::CustomBuilderBmc;
 
 #[post("/bmc/<version>/<slot>/watchdog", data = "<param>")]
 pub fn timeout(settings: &State<Settings>, version: ApiVersion, slot: u16, param: Json<json::watchdog::Param>) -> CResponse {
